@@ -1,0 +1,327 @@
+---
+title: "MA678 homework 00"
+author: "yourname"
+date: "Septmeber 5, 2016"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(knitr)
+library(foreign)
+```
+
+# Introduction 
+This is homework 0.  This is optional homework where you will create your first Rmd report and your fist regression function.  This homework is intended to be fun and playful.  Experiment with the format of the report and make fancy plots.
+
+Using the linear algebra and R you've learned in the boot camp you should have all the tools necessary to to complete this homework.  
+If you feel you are missing some information, please look into the lecture notes and Rmd files that were provided to you in the boot camp.  Also please come talk to me during the class on Thursday.
+
+Some additional resources to help you:
+
+* R markdown cheetsheet :
+  * https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf
+* GGplot2 :
+  * http://r4stats.com/examples/graphics-ggplot2/
+  * http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+ 
+ 
+## Creating your first linear regression function
+
+You will create a function that will solve the linear regression problem for you.  Below I have a "skeleton"" of a function.  Your job is to fill in the missing pieces and make it into a real function.  
+
+```{r function_definition}
+my_regression_1 <- function( y, X ){
+  n      <- length( y ) # sample size
+  bhat   <- ##[least squares solution (X'X)^{-1}X'y]## # beta hat
+  yhat   <- ##[predicted value of y given X        ]## # prediction
+  e      <- ##[observed - predicted                ]## # residual
+  return( list(beta=bhat,
+               data=data.frame( y=y, x=X, pred=yhat, resid=e )) )
+}
+```
+
+This is how function is written in R.  `my_regression_1` is the placeholder for the function that takes two arguments `y` and `X`.  Everything that function does is coded within `{}` and what gets returned as the result is written within `return()`.  If you don't get it, don't worry too much.  You will learn how to write functions in MA615.  The objective of this exercise is to give you an insight into the computation of regression and that this is just the same as what you've learned in linear algebra.  We will soon use the standard regression function `lm`.  You will see that the results you get are almost identical.
+
+### Write the least squares solution and solve for $\hat{\mathbf{\beta}}$.
+
+For a linear regression model
+$$ \mathbf{y}=\mathbf{X} \mathbf{\beta} +\mathbf{e} $$ 
+The least squares solution for the linear regression as you all should know by heart is $$(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}$$
+
+your first job is to replace the section 
+```{r}
+##[least squares solution (X'X)^{-1}X'y]##
+```
+
+with R code that would give you the least squares solution.
+
+### Calculate the fitted value or the predicted value
+
+The fitted value or the predicted value is $\hat{\mathbf{y}}$, which is $\mathbf{X} \hat{\mathbf{\beta}}$.  Replace the following
+```{r}
+##[predicted value of y given X        ]##
+```
+
+with R code that would calculate $\hat{\mathbf{y}}$.
+
+### Calculate the residual
+The residual is just $\mathbf{y}-\hat{\mathbf{y}}$, which is observed value minus the fitted value.  Replace the following
+```{r}
+##[observed - predicted                ]##
+```
+with R code that would calculate $\hat{\mathbf{e}}$.
+
+### Test your code
+Congratulation. You have made your very first regression function.
+Now that you have a function you need to check whether it is working correctly.  How do you do that?  Through a fake data simulation as we talked about in the boot camp.
+
+How did we create a fake data? Let's refresh our memory on how to do it from the boot camp.
+
+1. Create a matrix of predictor $\mathbf{X}$ where first column is all one and second column is a random sample from standard normal distribution. 
+
+```{r }
+sample_size_n <- 100
+X=cbind(rep(1,sample_size_n), rnorm(sample_size_n,0,1))
+```
+ You are welcome to design any $\mathbf{X}$ but let's start simple.
+
+
+2. Create a "TRUE" coefficient vector $\mathbf{\beta}$ 
+```{r}
+beta_true=c(1.2, 0.6)
+```
+
+3. Create an error vector $\mathbf{e}$ 
+```{r}
+e=rnorm(sample_size_n,0,1)
+```
+
+4. Generate outcome $\mathbf{y}$ 
+```{r}
+y= X%*%beta_true+e
+```
+
+5. Test your function
+
+Below is a code to test your function.  Be sure to remove the eval=FALSE chunk option so that it runs.
+```{r,eval=FALSE}
+fit_model <- my_regression_1( y, X )
+estimated_beta <- fit_model$beta
+cat("my beta estimates are \n")
+cat(estimated_beta)
+```
+
+Does your outcome match the "truth" you specified on step 2?
+
+When you write any code from now on, you will always, ALWAYS, ALWAYS!!! test your function.  This is something the computer science students get grilled during their training and you will be in any company. Please make it a habit and follow it religiously.
+
+
+### Play with your function
+Now that you have a function, your job is to play with it.  Be creative and try your function out.
+
+```{r}
+# write your code here.
+```
+
+## Looking at data
+
+You will look at four data from the text book and produce a report.
+
+This is where you will get the data for the two textbooks.
+
+- http://www.stat.columbia.edu/~gelman/arm/examples/
+- http://www.uni-goettingen.de/de/551625.html
+
+
+
+The code to read the data into the memory will be written for you.
+Your job is to look at the data and think about the following.
+
+1. What are some hypothesis that can be addressed from the data?
+2. Does regression seem like a good analysis strategy?
+3. Is there some transformation that you can apply so that linear  regression may become a reasonable choice?
+
+This is preliminary faze of the analysis so you don't need to have answers to the questions.  All I would like you to do is to play with the plotting functions you've learned in the discussion section.
+
+
+### Data:  Munich Rent Index
+
+variable name | description
+--------------|--------------------------------------------------
+rent          | Net rent per month (in Euro)
+rentsqm       | Net rent per month per square meter (in Euro)
+area          | Living area in square meters
+yearc         | Year of construction
+location      | Quality of location according to an expert assessment
+\            | 1 = average location 
+\            | 2 = good location 
+\            | 3 = top location
+district      | District in Munich
+
+
+```{r,echo=FALSE}
+# read data
+rent99 <- read.dta(file="http://www.uni-goettingen.de/de/document/download/2c6a9110f66a779f34b55032bb4fcf8f.dta/rent99.dta")
+```
+
+```{r}
+# your code here
+```
+
+### Beauty and student evaluation 
+
+The folder beauty contains data from Hamermesh and Parker (2005) on student evaluations of instructors' beauty and teaching quality for several courses at the University of Texas. The teaching evaluations were conducted at the end of the semester, and the beauty judgments were made later, by six students who had not attended the classes and were not aware of the course evaluations.
+
+variable name   |  variable label
+----------------|-----------------------------------
+tenured         |  Tenured
+profnumber      |  ID
+minority        |  Minority
+age             |  Professor's age
+beautyf2upper   |  10 to 1 rating, 2nd female upper division student
+beautyflowerdiv |  10 to 1 rating, female lower division student
+beautyfupperdiv |  10 to 1 rating, female upper division student
+beautym2upper   |  10 to 1 rating, 2nd male upper division student
+beautymlowerdiv |  10 to 1 rating, male lower division student
+beautymupperdiv |  10 to 1 rating, male upper division student
+btystdave       |  Average of 6 stdzd. beauty ratings)
+btystdf2u       |  ?
+btystdfl        |  ?
+btystdfu        |  ?
+btystdm2u       |  ?
+btystdml        |  ?
+btystdmu        |  ?
+class1 - 30     |  individual courses in multipleclass
+courseevaluat~n |  Average course rating
+didevaluation   |  Number filling out evaluations
+female          |  female = 1
+formal          |  Picture wears tie--jacket/blouse
+fulldept        |  Whole dept. had pictures on Web
+lower           |  Lower division course
+multipleclass   |  Equal 1 if >1 prof teaching sections in course in sample
+nonenglish      |  Professor non-English speaking native
+onecredit       |  Equal 1 if a one-credit course
+percentevalua~g |  didevaluation/students
+profevaluation  |  Average instructor rating
+students        |  Class enrollment
+tenuretrack     |  Tenure track faculty = 1
+blkandwhite     |  ?
+btystdvariance  |  ?
+btystdavepos    |  ?
+btystdaveneg    |  ?
+
+
+```{r beauty_data}
+beauty.data <- read.table ("http://www.stat.columbia.edu/~gelman/arm/examples/beauty/ProfEvaltnsBeautyPublic.csv", header=T, sep=",")
+```
+
+
+```{r}
+# your code here
+```
+
+### Earnings and height data
+
+The folder `earnings` has data from the Work, Family, and Well-Being Survey (Ross, 1990).
+You can find the codebook at http://www.stat.columbia.edu/~gelman/arm/examples/earnings/wfwcodebook.txt
+
+Variable | Number and Label
+---------|----------------------------------------
+EARN1    | PERSONAL INCOME
+HEIGHT1  | HEIGHT IN FEET
+HEIGHT2  | LEFTOVER HEIGHT IN INCHES
+SEX      | GENDER OF RESPONDENT
+RACE     | RACE OF RESPONDENT
+HISP     | HISPANIC ORIGIN
+ED       | HIGHEST GRADE / YEAR SCHOF FATHER
+YEARBN   | BIRTH YEAR OF RESPONDENT
+HEIGHT   | HEIGHT IN INCHES
+
+```{r earningheight_data}
+gelman_dir <- "http://www.stat.columbia.edu/~gelman/arm/examples/"
+heights    <- read.dta (paste0(gelman_dir,"earnings/heights.dta"))
+```
+
+```{r}
+# your code here
+```
+
+# Conceptual exercise
+
+### Housing price in Florida
+
+Here is a data on 100 home sale price in Gainesville Florida.  
+
+Variable | Number and Label
+---------|----------------------------------------
+case     | ID
+taxes    | annual prperty tax bill
+beds     | number of bedrooms
+baths    | number of bathrooms
+new      | new house or not. ( yes = 1 no = 0 )
+price    | price of the house
+size     | size of the house (square feet)
+
+```{r}
+Houses<-read.table("http://www.stat.ufl.edu/~aa/glm/data/Houses.dat",header = TRUE)
+```
+
+We fit a regression model to estimate the effect of number of beds on the housing price.
+The coefficient of beds is positive indicating that as number of bedrooms increase the housing price goes up.
+
+```{r}
+summary(lm(price~beds,data=Houses))
+```
+
+  Hoewever, when we fit the model to control for the housing size we see the coefficient for the beds become negative  indicating that as number of bedrooms increase the housing price goes down.
+
+```{r}
+summary(lm(price~beds+size,data=Houses))
+```
+
+Visually explore the data and figure out why this is happening.  Is number of bed positively or negatively associated?
+
+# Mathematical exercise
+
+Given $n$ pairs of observations $(y_i,x_i)$ find the least squares solution to the simple linear regression problem
+
+\begin{eqnarray*}
+y_1 &=& \beta_0 + \beta_1 x_1 + e_1\\
+y_2 &=& \beta_0 + \beta_1 x_2 + e_2\\
+&\vdots &\\
+y_n &=& \beta_0 + \beta_1 x_n+ e_n
+\end{eqnarray*}
+
+Derive the result in three ways, 
+
+1. using univariate calculus
+2. using multivariate calculus
+3. using the orthogonal projection
+
+
+
+# Rules
+
+Here are couple of rules that you must follow in order to get full credit on your homework.
+
+1. Put clear comments on your code where ever necessary.
+2. The code should run from top to bottom using the Knit button.
+3. Name the variables well so that the grader can figure out what you are doing.
+4. Test your script when you are done.
+
+Make sure the code you submit runs on a clean R environment.
+If the grader runs your code and get an error, 
+you don't get any point for that homework.
+
+You are welcome to help each other but write the code on your own 
+since we will test you on your coding ability.  When you go onto do interviews, you will be asked to code on a board.  Getting good grade is NOT your ultimate goal. So make sure you use this time to practice.
+
+
+# Feedback
+
+If you think this is too easy or too hard, please leave a comment here. I would like to hear your opinions.
+
